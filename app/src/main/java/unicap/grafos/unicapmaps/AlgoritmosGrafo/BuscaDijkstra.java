@@ -57,9 +57,15 @@ public class BuscaDijkstra implements InterfaceBuscaEmGrafo {
         while (!fila.isEmpty()) {
             u = fila.get(0);
             fila.remove(0);
+
+            if(u == chegada){
+                break;
+            }
+
             for (Vertice adjacente : u.getAdjacentes()){
-                relaxarAresta(u,adjacente,acharDistancia(u,adjacente));
-                fila.add(u);
+                if(relaxarAresta(u,adjacente,acharDistancia(u,adjacente))) {
+                    fila.add(adjacente);
+                }
             }
 //            Vertice node = acharMenor(nodes_naoSelecionados);
 //            nodesSelecionados.add(node);
@@ -76,14 +82,14 @@ public class BuscaDijkstra implements InterfaceBuscaEmGrafo {
         Vertice temp = chegada;
         while(temp != partida){
             caminho.add(temp);
-            anteriores.get(temp.getId());
+            temp = anteriores.get(temp.getId());
         }
         caminho.add(partida);
         Collections.reverse(caminho);
         return caminho;
     }
 
-    private void relaxarAresta(Vertice A, Vertice B, int custo) {
+    private boolean relaxarAresta(Vertice A, Vertice B, int custo) {
         int idA, idB, novoCusto;
         idA = A.getId();
         idB = B.getId();
@@ -95,8 +101,12 @@ public class BuscaDijkstra implements InterfaceBuscaEmGrafo {
         if(novoCusto < custos.get(idB)){
             custos.set(idB, novoCusto);
             anteriores.set(idB, A);
+            return true;
+        } else{
+            return false;
         }
     }
+
 
     private void inicializar (ArrayList<Vertice> anteriores, ArrayList<Integer> custo){
         int tamanhoGrafo = grafo.countVertices(), i;

@@ -43,6 +43,9 @@ public class GrafoController {
         if(partida == null || chegada == null){
             return null;
         }
+        if(partida == chegada){
+            return new ArrayList<>();
+        }
 
         InterfaceBuscaEmGrafo metodoBusca = FactoryBuscas.getInstance(this, nomeBusca);
         if(metodoBusca == null){
@@ -247,6 +250,11 @@ public class GrafoController {
         pathView.addCircle(vInicial.getCoordenadas().getX(), vInicial.getCoordenadas().getY(), Color.BLACK, 5);
         pathView.addCircle(vFinal.getCoordenadas().getX(), vFinal.getCoordenadas().getY(), Color.BLUE, 5);
 
+        arestaView.setImageBitmap(pathView.getBitmap());
+    }
+
+    public void exibirCaminho(ImageView arestaView, ArestaPathView pathView, Vertice vertice) {
+        pathView.addCircle(vertice.getCoordenadas().getX(), vertice.getCoordenadas().getY(), Color.BLUE, 5);
         arestaView.setImageBitmap(pathView.getBitmap());
     }
 

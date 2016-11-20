@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.CompletionInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,7 +44,7 @@ public class Main extends AppCompatActivity {
     private final int larguraOriginal = 1200;
     private int idVerticeInicial = -1;
     private int idVerticeFinal = -1;
-    private String metodoBusca = "profundidade";
+    private String metodoBusca = "dijkstra";
     private Toolbar toolbar;
     private EditText inputPartida;
     private EditText inputDestino;
@@ -55,7 +58,7 @@ public class Main extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         this.toolbar = toolbar;
-        toolbar.setSubtitle("Busca em Profundidade");
+        toolbar.setSubtitle("Busca Dijsktra");
 
 
         context = getApplicationContext();
@@ -80,6 +83,23 @@ public class Main extends AppCompatActivity {
         inputPartida = (EditText) findViewById(R.id.edit_text_partida);
         inputDestino = (EditText) findViewById(R.id.edit_text_destino);
         arestaView = (ImageView) findViewById( R.id.arestaConteiner);
+
+        inputPartida.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -133,17 +153,23 @@ public class Main extends AppCompatActivity {
         infoPartida.setText("Partida: "+ nomePartida);
         infoDestino.setText("> Destino: "+ nomeDestino);
         infoDistancia.setText("Distância: " + distancia + " metros");
-
     }
 
     private ArrayList<Aresta> mostrarCaminho() {
         //caminho = buscaEscolhida;
-        ArrayList<Aresta> caminho = grafoController.buscar(idVerticeInicial, idVerticeFinal, metodoBusca);
-        if(caminho != null && caminho.size() > 0) {
-            ArestaPathView pathView = new ArestaPathView(mapaWidth, mapaHeight, escalaInicial, 5);
-            grafoController.exibirCaminho(arestaView, pathView, caminho, Color.RED);
-        }
 
+        ArrayList<Aresta> caminho = grafoController.buscar(idVerticeInicial, idVerticeFinal, metodoBusca);
+        if(caminho == null){
+            return caminho;
+        }
+        ArestaPathView pathView = new ArestaPathView(mapaWidth, mapaHeight, escalaInicial, 5);
+        if(caminho.size() > 0) {
+            grafoController.exibirCaminho(arestaView, pathView, caminho, Color.RED);
+        } else{
+            //caso o início seja o mesmo que o final
+            Vertice destino = grafo.getVertice(idVerticeFinal);
+            grafoController.exibirCaminho(arestaView, pathView, destino);
+        }
         return caminho;
     }
 

@@ -24,6 +24,7 @@ public class BuscaBellManFord implements InterfaceBuscaEmGrafo {
     public BuscaBellManFord(GrafoController controller){
         this.controller = controller;
         grafo = Grafo.getInstance();
+
     }
 
     @Override

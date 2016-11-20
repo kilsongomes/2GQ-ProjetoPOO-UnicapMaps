@@ -40,11 +40,12 @@ public class GrafoCreator {
         estabelecerAdjacencias();
         configCoordArestas();
         //grafoController.logArestas();
-        Log.i("--", "----------------------------------------------------------");
+        //Log.i("--", "----------------------------------------------------------");
         espelharGrafo();
-        grafoController.logArestas();
+        //grafoController.logArestas();
         atribuirTrajetos();
     }
+
 
     private void atribuirTrajetos() {
         Vertice A, B;

@@ -91,6 +91,12 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="0dp"
             >
+            <ListView
+                android:id="@+id/listaBusca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible">
+            </ListView>
 
             <EditText
                 android:id="@+id/edit_text_partida"
@@ -105,14 +111,12 @@
                 android:textAlignment="center"
                 android:nextFocusUp="@id/edit_text_partida"
                 android:nextFocusLeft="@id/edit_text_partida"
-                android:inputType="number"
                 android:maxLines="1"
                 android:textStyle="normal|bold"
                 android:selectAllOnFocus="true"
                 android:singleLine="true" />
 
             <EditText
-                android:inputType="number"
                 android:selectAllOnFocus="true"
                 android:layout_below="@id/edit_text_partida"
                 android:id="@+id/edit_text_destino"
@@ -128,7 +132,8 @@
                 android:textAlignment="center"
                 android:maxLines="1"
                 android:textStyle="normal|bold"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:visibility="visible"/>
 
             <TextView
                 android:layout_width="wrap_content"
