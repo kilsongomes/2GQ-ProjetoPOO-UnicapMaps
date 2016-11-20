@@ -213,5 +213,4 @@ public class DadosTrajetosArestas{
     private static String[] V_R = {};
     private static String[] S_T = {};
     private static String[] T_S = {};
-
 }

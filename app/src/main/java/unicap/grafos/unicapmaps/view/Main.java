@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import unicap.grafos.unicapmaps.AlgoritmosGrafo.ColoracaoWelshPowell;
 import unicap.grafos.unicapmaps.R;
 import unicap.grafos.unicapmaps.controller.GrafoController;
+import unicap.grafos.unicapmaps.dao.InfoBlocos;
 import unicap.grafos.unicapmaps.model.Aresta;
 import unicap.grafos.unicapmaps.model.Grafo;
 import unicap.grafos.unicapmaps.model.Vertice;
@@ -59,6 +60,9 @@ public class Main extends AppCompatActivity {
         setSupportActionBar(toolbar);
         this.toolbar = toolbar;
         toolbar.setSubtitle("Busca Dijsktra");
+
+        InfoBlocos info = new InfoBlocos();
+        ArrayList<String[]> infoBlocos = info.getInfoBlocos();
 
 
         context = getApplicationContext();
@@ -126,14 +130,26 @@ public class Main extends AppCompatActivity {
     private boolean validarInputs() {
         String inputTextPartida = inputPartida.getText().toString().trim();
         String inputTextDestino = inputDestino.getText().toString().trim();
+        Boolean erro = false;
 
-        if(inputTextPartida.length() > 0 && inputTextDestino.length() > 0){
+        try{
             idVerticeInicial = Integer.parseInt(inputTextPartida);
+        } catch (NumberFormatException e){
+            erro = true;
+        }
+
+        try{
             idVerticeFinal = Integer.parseInt(inputTextDestino);
-        } else{
+        } catch (NumberFormatException e){
+            erro = true;
+        }
+
+        if(erro){
             idVerticeInicial = -1;
             idVerticeFinal = -1;
         }
+
+
         if(grafo.getVertice(idVerticeInicial) != null && grafo.getVertice(idVerticeFinal) != null){
             return true;
         }
