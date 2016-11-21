@@ -9,6 +9,7 @@
     <color name="bg2">#654123</color>
     <color name="branco">#ffffff</color>
     <color name="cinza">#999</color>
+    <color name="cinza_claro">#eee</color>
     <color name="red">#f00</color>
     <color name="preto">#000</color>
 </resources>

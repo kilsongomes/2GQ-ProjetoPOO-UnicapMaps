@@ -6,13 +6,14 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
-import unicap.grafos.unicapmaps.R;
-import unicap.grafos.unicapmaps.model.Vertice;
+import unicap.grafos.unicapmaps.model.ResultadoPesquisa;
+import unicap.grafos.unicapmaps.model.Rota;
 
 /**
  * Created by cais on 19/11/16.
@@ -23,16 +24,22 @@ public class BuscaDinamica implements TextWatcher {
     private String stringInput;
     private Context context;
     private ListView listView;
-    private EditText source;
+    private EditText editTextSource;
     private ArrayList<ResultadoPesquisa> resultado;
     private AdapterResultadoPesquisa adapter;
+    private LinearLayout listViewContainer;
+    private Rota rota;
+    private int alvo;
     //private BuscaInfo buscador;
 
 
-    public BuscaDinamica(Context context, ListView listView, EditText source) {
+    public BuscaDinamica(Context context, ListView listView, EditText source, Rota rota, int alvo) {
         this.context = context;
         this.listView = listView;
-        this.source = source;
+        this.editTextSource = source;
+        listViewContainer = (LinearLayout) listView.getParent();
+        this.rota = rota;
+        this.alvo = alvo;
         //buscador = new BuscaInfo();
     }
 
@@ -43,69 +50,68 @@ public class BuscaDinamica implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        stringInput = (String) s;
+        if (editTextSource.hasFocus()) {
+        stringInput = s.toString();
+
+            // is only executed if the EditText was directly changed by the user
+            rota.set(alvo, -1);
+        }
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(!stringInput.isEmpty()){
+        if(!stringInput.isEmpty() && editTextSource.hasFocus()){
             //resultado = buscador.buscar(stringInput);
+            resultado = criarResultadosFalsos();
             if(resultado == null){
                 //nenhum resultado encontrado
-                //esconder listview
                 resetListView();
             } else{
-                //array
                 //passar adapter com resultado para o listview
                 startListView();
+            }
+        } else{
+            resetListView();
+        }
+    }
 
+    private ArrayList<ResultadoPesquisa> criarResultadosFalsos() {
+        ArrayList<ResultadoPesquisa> result = new ArrayList();
+        int id;
+        for(int i = 0; i < 20; i++){
+            id = (int) (Math.random() * 24);
+            if(i%2 == 0) {
+                result.add(new ResultadoPesquisa(id, "Bloco " + id, "descrição " + id));
+            }else{
+                result.add(new ResultadoPesquisa(id, "Bloco " + id));
             }
         }
+        return result;
     }
 
     private void resetListView() {
-        listView.setVisibility(View.INVISIBLE);
+        listViewContainer.setVisibility(View.INVISIBLE);
     }
 
     private void startListView() {
-        //adapter = new AdapterResultadoPesquisa(context, resultado);
+        adapter = new AdapterResultadoPesquisa(context, resultado, editTextSource, rota, alvo);
         listView.setAdapter(adapter);
+        posicionaListView();
 
-        //posicionaListView();
-
-        listView.setVisibility(View.VISIBLE);
+        listViewContainer.setVisibility(View.VISIBLE);
     }
 
-    /*private void posicionaListView() {
-        int left, top;
-        Vertice destino = grafo.getVertice(idVerticeFinal);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        RelativeLayout balao = (RelativeLayout)findViewById(R.id.balao_local);
+    private void posicionaListView() {
+        int top;
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        left = (int) (destino.getCoordenadas().getX()*escalaInicial) - balao.getWidth() - 5;
-        top = (int) (destino.getCoordenadas().getY()*escalaInicial) - balao.getHeight() - 5;
-        balao.setLayoutParams(params);
+        top = editTextSource.getBottom() + 2;
+        listViewContainer.setLayoutParams(params);
 
-        params.setMargins(left, top,0,0);
+        params.setMargins(0, top,0,0);
 
-    }*/
-
-
-    public class ResultadoPesquisa{
-        private String nomeBloco;
-        private String descricao;
-
-        public ResultadoPesquisa(String nomeBloco, String descricao){
-            this.nomeBloco = nomeBloco;
-            this.descricao = descricao;
-        }
-
-        public String getNomeBloco() {
-            return nomeBloco;
-        }
-
-        public String getDescricao() {
-            return descricao;
-        }
     }
+
+
+
 }

@@ -27,11 +27,9 @@ public class BuscaEmLargura implements InterfaceBuscaEmGrafo {
         //fila
         ArrayList<Vertice> caminho = new ArrayList<>();
 
-
         current = inicio;
         caminho.add(current);
         visitados.set(current.getId(), true);
-
 
         while(!caminho.isEmpty()){
             prox.addAll(getProximosVertices(current, visitados, prox));

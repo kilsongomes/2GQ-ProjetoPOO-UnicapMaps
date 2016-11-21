@@ -90,13 +90,9 @@
             android:layout_marginEnd="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="0dp"
+
             >
-            <ListView
-                android:id="@+id/listaBusca"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible">
-            </ListView>
+
 
             <EditText
                 android:id="@+id/edit_text_partida"
@@ -114,6 +110,7 @@
                 android:maxLines="1"
                 android:textStyle="normal|bold"
                 android:selectAllOnFocus="true"
+                android:imeOptions="actionDone"
                 android:singleLine="true" />
 
             <EditText
@@ -128,6 +125,7 @@
                 android:hint="Digite o local de destino"
                 android:background="@drawable/edit_text_style"
                 android:alpha="0.9"
+                android:imeOptions="actionDone"
                 android:textSize="16dp"
                 android:textAlignment="center"
                 android:maxLines="1"
@@ -160,6 +158,34 @@
                 android:textAlignment="center"
                 android:layout_centerHorizontal="true"
                 />
+
+            <LinearLayout
+                android:id="@+id/lista_busca_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingBottom="70dp"
+                android:visibility="invisible">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="10dp"
+                    android:textColor="@color/cinza"
+                    android:text="Resultados encontrados:"
+                    android:background="@color/cinza_claro"
+                    android:textAllCaps="true"
+
+                    android:padding="3dp"/>
+                <ListView
+                    android:id="@+id/listaBusca"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/branco"
+                    >
+                </ListView>
+            </LinearLayout>
 
         </RelativeLayout>
 
@@ -216,6 +242,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Limpar"
+            android:visibility="invisible"
             android:backgroundTint="@color/colorPrimaryDark"
             android:textColor="@color/branco"/>
         <Button
@@ -230,6 +257,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Traçar Rota"
+            android:visibility="invisible"
             android:backgroundTint="@color/colorPrimaryDark"
             android:textColor="@color/branco"
             />

@@ -233,8 +233,6 @@ public class GrafoController {
             tempo += 500;
         }
 
-
-
     }
 
     public void exibirCaminho(ImageView arestaView, ArestaPathView pathView, ArrayList<Aresta> arestas, int cor) {

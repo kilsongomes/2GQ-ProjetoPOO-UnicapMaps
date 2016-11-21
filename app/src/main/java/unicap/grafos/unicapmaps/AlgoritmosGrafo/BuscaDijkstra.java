@@ -73,7 +73,7 @@ public class BuscaDijkstra implements InterfaceBuscaEmGrafo {
 //            caminhoMinimo(node);
         }
         retorno = varrerAnteriores(partida,chegada);
-        //retorno = escolherCaminho(chegada);
+        //retorno = escolherCaminho(destino);
         return controller.getArestasFromVertices(retorno);
     }
 

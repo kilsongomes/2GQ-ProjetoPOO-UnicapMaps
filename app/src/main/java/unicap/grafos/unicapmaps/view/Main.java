@@ -3,23 +3,19 @@ package unicap.grafos.unicapmaps.view;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Path;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.CompletionInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,10 +24,11 @@ import java.util.ArrayList;
 
 import unicap.grafos.unicapmaps.AlgoritmosGrafo.ColoracaoWelshPowell;
 import unicap.grafos.unicapmaps.R;
+import unicap.grafos.unicapmaps.controller.BuscaDinamica;
 import unicap.grafos.unicapmaps.controller.GrafoController;
-import unicap.grafos.unicapmaps.dao.InfoBlocos;
 import unicap.grafos.unicapmaps.model.Aresta;
 import unicap.grafos.unicapmaps.model.Grafo;
+import unicap.grafos.unicapmaps.model.Rota;
 import unicap.grafos.unicapmaps.model.Vertice;
 
 public class Main extends AppCompatActivity {
@@ -43,14 +40,14 @@ public class Main extends AppCompatActivity {
     private int mapaWidth;
     private int mapaHeight;
     private final int larguraOriginal = 1200;
-    private int idVerticeInicial = -1;
-    private int idVerticeFinal = -1;
     private String metodoBusca = "dijkstra";
     private Toolbar toolbar;
     private EditText inputPartida;
     private EditText inputDestino;
     private ImageView arestaView;
     private String modo = "busca";
+    private LinearLayout listaBuscaContainer;
+    private Rota rota = new Rota();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +57,6 @@ public class Main extends AppCompatActivity {
         setSupportActionBar(toolbar);
         this.toolbar = toolbar;
         toolbar.setSubtitle("Busca Dijsktra");
-
-        InfoBlocos info = new InfoBlocos();
-        ArrayList<String[]> infoBlocos = info.getInfoBlocos();
-
 
         context = getApplicationContext();
         grafoController = new GrafoController();
@@ -88,29 +81,17 @@ public class Main extends AppCompatActivity {
         inputDestino = (EditText) findViewById(R.id.edit_text_destino);
         arestaView = (ImageView) findViewById( R.id.arestaConteiner);
 
-        inputPartida.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        listaBuscaContainer = (LinearLayout) findViewById(R.id.lista_busca_container);
+        ListView listViewBusca = (ListView) findViewById(R.id.listaBusca);
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        inputPartida.addTextChangedListener(new BuscaDinamica(context, listViewBusca, inputPartida, rota, 0));
+        inputDestino.addTextChangedListener(new BuscaDinamica(context, listViewBusca, inputDestino, rota, 1));
     }
 
 
     public void tracarRota() {
-        if(!validarInputs()){
-            Toast.makeText(context, "Locais inválidos", Toast.LENGTH_LONG).show();
-            //grafoController.exibirGrafoCompleto(arestaView,pathView);
+        if(!rota.isComplete()){
+            Toast.makeText(context, "Escolha os locais de partida e destino", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -127,7 +108,7 @@ public class Main extends AppCompatActivity {
         arestaView.setVisibility(View.VISIBLE);
     }
 
-    private boolean validarInputs() {
+    /*private boolean validarInputs() {
         String inputTextPartida = inputPartida.getText().toString().trim();
         String inputTextDestino = inputDestino.getText().toString().trim();
         Boolean erro = false;
@@ -154,7 +135,7 @@ public class Main extends AppCompatActivity {
             return true;
         }
         return false;
-    }
+    }*/
 
     private void showInfo(ArrayList<Aresta> caminho) {
         LinearLayout infoTrajeto = (LinearLayout) findViewById(R.id.info_trajeto);
@@ -162,8 +143,8 @@ public class Main extends AppCompatActivity {
         TextView infoDestino = (TextView) infoTrajeto.getChildAt(1);
         TextView infoDistancia = (TextView) infoTrajeto.getChildAt(2);
 
-        String nomePartida = grafo.getVertice(idVerticeInicial).getNome();
-        String nomeDestino = grafo.getVertice(idVerticeFinal).getNome();
+        String nomePartida = grafo.getVertice(rota.getPartida()).getNome();
+        String nomeDestino = grafo.getVertice(rota.getDestino()).getNome();
         int distancia = grafoController.calcularDistancia(caminho);
 
         infoPartida.setText("Partida: "+ nomePartida);
@@ -174,7 +155,7 @@ public class Main extends AppCompatActivity {
     private ArrayList<Aresta> mostrarCaminho() {
         //caminho = buscaEscolhida;
 
-        ArrayList<Aresta> caminho = grafoController.buscar(idVerticeInicial, idVerticeFinal, metodoBusca);
+        ArrayList<Aresta> caminho = grafoController.buscar(rota.getPartida(), rota.getDestino(), metodoBusca);
         if(caminho == null){
             return caminho;
         }
@@ -183,7 +164,7 @@ public class Main extends AppCompatActivity {
             grafoController.exibirCaminho(arestaView, pathView, caminho, Color.RED);
         } else{
             //caso o início seja o mesmo que o final
-            Vertice destino = grafo.getVertice(idVerticeFinal);
+            Vertice destino = grafo.getVertice(rota.getDestino());
             grafoController.exibirCaminho(arestaView, pathView, destino);
         }
         return caminho;
@@ -191,7 +172,7 @@ public class Main extends AppCompatActivity {
 
     private void posicionarBalao() {
         int left, top;
-        Vertice destino = grafo.getVertice(idVerticeFinal);
+        Vertice destino = grafo.getVertice(rota.getDestino());
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         RelativeLayout balao = (RelativeLayout)findViewById(R.id.balao_local);
 
@@ -222,6 +203,8 @@ public class Main extends AppCompatActivity {
         layout_botoes.setVisibility(View.VISIBLE);
         layout_info.setVisibility(View.VISIBLE);
 
+        rota.reset();
+
         inputPartida.setText("");
         inputDestino.setText("");
         inputDestino.clearFocus();
@@ -233,7 +216,7 @@ public class Main extends AppCompatActivity {
         infoTrajeto.setVisibility(View.INVISIBLE);
         balao.setVisibility(View.INVISIBLE);
         layoutInputs.setVisibility(View.VISIBLE);
-        submitButton.setVisibility(View.VISIBLE);
+        submitButton.setVisibility(View.INVISIBLE);
         clearButton.setVisibility(View.INVISIBLE);
         arestaView.setVisibility(View.INVISIBLE);
 
@@ -264,7 +247,6 @@ public class Main extends AppCompatActivity {
             balao.setVisibility(View.VISIBLE);
             infoTrajeto.setVisibility(View.VISIBLE);
         }
-
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -287,7 +269,6 @@ public class Main extends AppCompatActivity {
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -373,4 +354,14 @@ public class Main extends AppCompatActivity {
         startActivity(mainIntent);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(inputPartida.hasFocus() || inputDestino.hasFocus() || listaBuscaContainer.getVisibility() == View.VISIBLE){
+            inputPartida.clearFocus();
+            inputDestino.clearFocus();
+            listaBuscaContainer.setVisibility(View.INVISIBLE);
+        }else {
+            super.onBackPressed();
+        }
+    }
 }
